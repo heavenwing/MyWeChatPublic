@@ -1,0 +1,25 @@
+﻿@{
+    Layout = null;
+    var message = ViewBag.ErrorMessage as string;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Error</title>
+</head>
+<body>
+    <hgroup>
+        <h1>Error.</h1>
+        @if (string.IsNullOrEmpty(message))
+        {
+            <h2>发送了服务器未知错误。</h2>
+        }
+        else
+        {
+            <h2>@message</h2>
+        }
+    </hgroup>
+</body>
+</html>

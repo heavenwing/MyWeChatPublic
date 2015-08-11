@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using MyWeChatPublic.Models;
+using System.Threading.Tasks;
 
 namespace MyWeChatPublic.Controllers
 {
@@ -17,15 +18,29 @@ namespace MyWeChatPublic.Controllers
     {
         private WeChatDbContext db = new WeChatDbContext();
 
+        private const int _pageSize = 15;
+
         // GET: Articles
-        public ActionResult Index()
+        public async Task<ActionResult> Index(string criteria, int page = 1)
         {
             try
             {
                 var query = from item in db.Articles
+                            where (string.IsNullOrEmpty(criteria)
+                                || item.Published == criteria
+                                || item.Title.Contains(criteria)
+                                || item.Tags.Contains(criteria))
                             orderby item.Published descending
                             select item;
-                return View(query);
+
+                var total= await query.CountAsync();
+                ViewBag.Total = total;
+                ViewBag.Page = page;
+                ViewBag.Count = total / _pageSize + ((total % _pageSize) > 0 ? 1 : 0);
+                ViewBag.Criteria = criteria;
+
+                var lst = await query.Skip((page - 1) * _pageSize).Take(_pageSize).ToListAsync();
+                return View(lst);
             }
             catch (Exception ex)
             {

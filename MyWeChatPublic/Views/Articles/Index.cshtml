@@ -2,13 +2,20 @@
 
 @{
     ViewBag.Title = "Index";
+    string criteria = ViewBag.Criteria == null ? null : ViewBag.Criteria.ToString();
 }
 
 <h2>Index</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+@using (Html.BeginForm("Index", "Articles", FormMethod.Get))
+{
+    <p>
+        <input type="search" name="criteria" value="@criteria" class="form-control" placeholder = "输入发布时间、标题或关键字"/>
+        @*@Html.TextBox("criteria", criteria, new { placeholder = "发布时间、标题或关键字" })*@
+        <input type="submit" value="搜索" class="btn btn-primary" />
+    </p>
+}
+
 <table class="table">
     <tr>
         <th>
@@ -62,3 +69,17 @@
     }
 
 </table>
+
+<ul class="pagination">
+    @for (int i = 1; i < ViewBag.Count + 1; i++)
+    {
+        if (ViewBag.Page == i)
+        {
+            <li class="active"><a href="@Url.Action("Index", new { page = i, criteria = criteria })">@i</a></li>
+        }
+        else
+        {
+            <li><a href="@Url.Action("Index", new { page = i, criteria = criteria })">@i</a></li>
+        }
+    }
+</ul>
